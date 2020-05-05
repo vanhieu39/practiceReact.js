@@ -53,6 +53,7 @@
 }
 .dropdown-menu .fa::before{
   padding-right: 10px;
+  cursor: pointer;
 }
 .text-right{
   float:right;

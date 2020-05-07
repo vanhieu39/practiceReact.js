@@ -1,6 +1,7 @@
 # practiceReact.js
 
-Sử dụng.
+clone 
 
-dùng: npm install
-sau đó: npm start
+step 1 : npm install
+step 2: npm start
+step 3: npm run build (public internet)

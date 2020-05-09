@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-
-
+import {connect} from 'react-redux'
+import *as actions from '../actions/index'
 // Import Component
 
 class TaskForm extends Component {
@@ -9,31 +9,29 @@ class TaskForm extends Component {
     this.state={
       id:'',
       name:'',
-      status:false
+      status: false
     }
   }
   componentWillMount(){
-    if(this.props.task){ 
+    if(this.props.itemEditing && this.props.itemEditing.id !== null){ 
       this.setState({
-        id:this.props.task.id,
-        name:this.props.task.name,
-        status:this.props.task.status
+        id:this.props.itemEditing.id,
+        name:this.props.itemEditing.name,
+        status:this.props.itemEditing.status
       })
+    }else{
+      this.onClear()
     }
   }
   componentWillReceiveProps(nextProps){
-    if(nextProps && nextProps.task){ 
+    if(nextProps && nextProps.itemEditing){ 
       this.setState({
-        id:nextProps.task.id,
-        name:nextProps.task.name,
-        status:nextProps.task.status
+        id:nextProps.itemEditing.id,
+        name:nextProps.itemEditing.name,
+        status:nextProps.itemEditing.status
       })
-    }else if(!nextProps.task){
-      this.setState({
-        id:'',
-        name:'',
-        status:false
-      })
+    }else{
+      this.onClear()
     }
   }
   onCloseForm=()=>{
@@ -50,9 +48,10 @@ class TaskForm extends Component {
       [name]:value
     })
   }
-  onSubmit=(event)=>{
+  onSave=(event)=>{
     event.preventDefault();
-    this.props.onSubmit(this.state)
+    // this.props.onSubmit(this.state)
+    this.props.onSaveTask(this.state)
     this.onClear();
     this.onCloseForm()
   }
@@ -63,19 +62,19 @@ class TaskForm extends Component {
     })
   }
   render() {
-    let {id} = this.state
+   if(!this.props.isDisplayForm) return null
     return (
         <div className="panel panel-warning">
               <div className="panel-heading" >
                 <h3 className="panel-title">
-                 {id ===''?" Thêm Công Việc":"Cập nhật công việc"}
+                 {!this.state.id?"Thêm Công Việc":"Cập nhật công việc"}
                   <span className="fas fa-times-circle text-right"
                   onClick={this.onCloseForm}
                   > </span>
                 </h3>
               </div>
               <div className="panel-body">
-                <form onSubmit={this.onSubmit}>
+                <form onSubmit={this.onSave}>
                   <div className="form-group">
                     <label>Tên :</label>
                     <input type="text" className="form-control" 
@@ -111,7 +110,25 @@ class TaskForm extends Component {
               </div>
             </div>
     )
+  
   }
 }
 
-export default TaskForm;
+const mapStateToProps=state=>{
+  return {
+    isDisplayForm : state.isDisplayForm,
+    itemEditing: state.itemEditing
+  }
+}
+const mapDisptachToProps = (dispatch,props)=>{
+  return {
+    onSaveTask:(task)=>{
+      dispatch(actions.saveTask(task))
+    },
+    onCloseForm:()=>{
+      dispatch(actions.closeForm())
+    },
+   
+  }
+}
+export default connect(mapStateToProps,mapDisptachToProps) (TaskForm);
